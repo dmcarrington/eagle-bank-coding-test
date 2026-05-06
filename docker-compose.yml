@@ -1,0 +1,16 @@
+services:
+  api:
+    build: .
+    ports:
+      - "${PORT:-8090}:8090"
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - PORT=8090
+      - DB_PATH=/data/eagle.db
+      - JWT_TTL=${JWT_TTL:-24h}
+    volumes:
+      - eagle-data:/data
+    restart: unless-stopped
+
+volumes:
+  eagle-data:

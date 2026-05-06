@@ -1,0 +1,8 @@
+*.db
+*.db-wal
+*.db-shm
+.env
+/eagle-bank
+.claude/
+thoughts/
+*.pdf
