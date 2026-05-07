@@ -52,6 +52,9 @@ func (s *UserService) Create(ctx context.Context, input CreateUserInput) (*domai
 		UpdatedAt:    now,
 	}
 	if err := s.users.Create(ctx, u); err != nil {
+		if errors.Is(err, store.ErrDuplicate) {
+			return nil, ErrEmailTaken
+		}
 		return nil, err
 	}
 	return u, nil

@@ -32,6 +32,15 @@ func writeError(c *gin.Context, err error) {
 		c.JSON(http.StatusForbidden, errorResponse{Message: err.Error()})
 	case errors.Is(err, service.ErrConflict):
 		c.JSON(http.StatusConflict, errorResponse{Message: err.Error()})
+	case errors.Is(err, service.ErrEmailTaken):
+		c.JSON(http.StatusBadRequest, badRequestResponse{
+			Message: "validation failed",
+			Details: []validationDetail{{
+				Field:   "email",
+				Message: err.Error(),
+				Type:    "unique",
+			}},
+		})
 	case errors.Is(err, service.ErrInvalidCredentials):
 		c.JSON(http.StatusUnauthorized, errorResponse{Message: "invalid email or password"})
 	case errors.Is(err, service.ErrInsufficientFunds):

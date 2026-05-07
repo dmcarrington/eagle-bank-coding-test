@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/davidcarrington/eagle-bank/internal/domain"
@@ -32,6 +33,9 @@ func (s *UserStore) Create(ctx context.Context, u *domain.User) error {
 		u.CreatedAt.UTC().Format(time.RFC3339),
 		u.UpdatedAt.UTC().Format(time.RFC3339),
 	)
+	if err != nil && strings.Contains(err.Error(), "UNIQUE constraint failed") {
+		return ErrDuplicate
+	}
 	return err
 }
 

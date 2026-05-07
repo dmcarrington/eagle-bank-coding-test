@@ -103,6 +103,37 @@ func TestCreateUser_ShortPassword_Returns400(t *testing.T) {
 	}
 }
 
+func TestCreateUser_DuplicateEmail_Returns400(t *testing.T) {
+	env := newTestEnv(t)
+	env.mustCreateUser(t, "dup@example.com", "password123")
+
+	w := env.do(t, http.MethodPost, "/v1/users", "", map[string]any{
+		"name":        "Someone Else",
+		"email":       "dup@example.com",
+		"password":    "password123",
+		"phoneNumber": "+447700900099",
+		"address": map[string]string{
+			"line1": "1 St", "town": "London", "county": "GL", "postcode": "SW1",
+		},
+	})
+	if w.Code != http.StatusBadRequest {
+		t.Fatalf("status = %d, want 400; body: %s", w.Code, w.Body.String())
+	}
+	body := decodeBody(t, w)
+	details, _ := body["details"].([]any)
+	found := false
+	for _, d := range details {
+		dm := d.(map[string]any)
+		if dm["field"] == "email" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Errorf("expected validation detail for email field; got %v", body["details"])
+	}
+}
+
 // --- Login ---
 
 func TestLogin_Success(t *testing.T) {
