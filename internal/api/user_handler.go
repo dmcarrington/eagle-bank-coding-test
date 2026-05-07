@@ -71,6 +71,7 @@ type userResponse struct {
 }
 
 type loginResponse struct {
+	UserID    string `json:"userId"`
 	Token     string `json:"token"`
 	ExpiresAt string `json:"expiresAt"`
 }
@@ -143,6 +144,7 @@ func (h *userHandler) login(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, loginResponse{
+		UserID:    u.ID,
 		Token:     token,
 		ExpiresAt: expiresAt.UTC().Format(time.RFC3339),
 	})
