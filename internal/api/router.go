@@ -31,7 +31,7 @@ func NewRouter(deps Deps) *gin.Engine {
 	th := &transactionHandler{txns: txns}
 
 	r := gin.New()
-	// Trust the Docker network (host: 172.17.0.1)
+	// Trust the Docker network (host: 172.17.0.1) and localhost for real client IPs. In production, this would be the load balancer's subnet.
 	err := r.SetTrustedProxies([]string{"172.17.0.0/16", "127.0.0.1"})
 	if err != nil {
 		panic(err)

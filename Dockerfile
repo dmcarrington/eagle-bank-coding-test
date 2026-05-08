@@ -10,16 +10,15 @@ RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o /eagle-bank ./cmd/server
 
 FROM alpine:3.20
 
-RUN apk add --no-cache su-exec && \
-    addgroup -S eagle && adduser -S eagle -G eagle && \
-    mkdir -p /data
+RUN addgroup -S eagle && adduser -S eagle -G eagle && \
+    mkdir -p /data && chown eagle:eagle /data
 
 WORKDIR /app
 
 COPY --from=builder /eagle-bank .
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+
+USER eagle
 
 EXPOSE 8090
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/app/eagle-bank"]
